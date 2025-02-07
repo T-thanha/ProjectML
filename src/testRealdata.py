@@ -9,8 +9,7 @@ import cv2 as cv
 
 LABEL_PATH = "data/annotations/"
 MODEL_PATH = "models/RCNN/MLP-best-train_loss2.9348-epoch=33-lr=0.002-wd=0.0001.pt" 
-IMAGES_PATH = "data/testing/"
-VIDEO_PATH = "data/videotest/"
+IMAGES_PATH = "data/test/"
 # โหลดโมเดล
 def load_model(device, model_path, num_classes=2):
     model = FasterRCNN(num_classes)
@@ -69,7 +68,7 @@ def img_test(device,model, image):
 
 def video_test(device,model, video_path):
     cap = cv.VideoCapture(video_path)
-    cap.set(cv.CAP_PROP_FPS, 30)
+    cap.set(cv.CAP_PROP_FPS, 60)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
 
@@ -98,9 +97,9 @@ if __name__ == "__main__":
     test_img = glob.glob(IMAGES_PATH + "/*.jpg") + glob.glob(IMAGES_PATH + "/*.png") + glob.glob(IMAGES_PATH + "/*.jpeg")
 
     # Test on images
-    for image_file in test_img:
-        image = Image.open(image_file)
-        img_test(device, model, image)
+    # for image_file in test_img:
+    #     image = Image.open(image_file)
+    #     img_test(device, model, image)
 
     # Test on video
-    # video_test(device,model, VIDEO_PATH + "sample.mp4")
+    video_test(device,model, IMAGES_PATH + "TEST.mp4")
