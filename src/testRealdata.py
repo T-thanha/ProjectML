@@ -8,7 +8,7 @@ import glob
 import cv2 as cv
 
 LABEL_PATH = "data/annotations/"
-MODEL_PATH = "models/RCNN/MLP-best-train_loss2.9348-epoch=33-lr=0.002-wd=0.0001.pt" 
+MODEL_PATH = "models/RCNN/MLP-best-train_loss2.7217-epoch=44-lr=0.002-wd=0.0001.pt" 
 IMAGES_PATH = "data/test/"
 # โหลดโมเดล
 def load_model(device, model_path, num_classes=2):
