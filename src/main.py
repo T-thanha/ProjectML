@@ -17,7 +17,7 @@ LEARNING_RATE = 0.002
 WEIGHT_DECAY = 0.0001
 
 # - Model State
-MODEL_CHECKPOINT = "MLP-best-train_loss2.9348-epoch=33-lr=0.002-wd=0.0001.pt"
+MODEL_CHECKPOINT = "MLP-best-train_loss2.7217-epoch=44-lr=0.002-wd=0.0001.pt"
 RUN_EPOCHS = 50
 
 if __name__ == "__main__":
