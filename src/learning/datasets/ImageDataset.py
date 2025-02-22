@@ -12,34 +12,34 @@ class LicensePlateDataset(Dataset):
         self.annotation_paths = annotation_paths
         self.transforms = transforms
 
-        self.__input_list = []
+        # self.__input_list = []
         self.__ann_list = []
         self.__dataAlignment()
         
     def __dataAlignment(self):
-        get_img_folders = glob.glob(self.image_paths + "/*.jpg") + glob.glob(self.image_paths + "/*.png")
+        # get_img_folders = glob.glob(self.image_paths + "/*.jpg") + glob.glob(self.image_paths + "/*.png")
         get_ann_folders = glob.glob(self.annotation_paths + "/*.xml")
         
-        for img, ann in zip(get_img_folders, get_ann_folders):
-            self.__input_list.append(img)
+        for ann in get_ann_folders:
             self.__ann_list.append(ann)
     
 
     def __getitem__(self, idx):
-        img_path = self.__input_list[idx]
+        # img_path = self.__input_list[idx]
         ann_path = self.__ann_list[idx]
-        
-        # Load image
-        img = Image.open(img_path).convert("RGB")
         
         # Parse XML annotation
         tree = ET.parse(ann_path)
         root = tree.getroot()
         boxes = []
         labels = []
+
+        img_path = os.path.join(self.image_paths, root.find("filename").text)
+
+        # Load image
+        img = Image.open(img_path).convert("RGB")
         
         for obj in root.findall("object"):
-            name = obj.find("name").text
             bndbox = obj.find("bndbox")
             xmin = int(bndbox.find("xmin").text)
             ymin = int(bndbox.find("ymin").text)
@@ -47,7 +47,7 @@ class LicensePlateDataset(Dataset):
             ymax = int(bndbox.find("ymax").text)
             
             boxes.append([xmin, ymin, xmax, ymax])
-            labels.append(1)  # Assuming single-class (license plate)
+            labels.append(1)
         
         boxes = torch.tensor(boxes, dtype=torch.float32)
         labels = torch.tensor(labels, dtype=torch.int64)
@@ -62,4 +62,4 @@ class LicensePlateDataset(Dataset):
         return img, target
     
     def __len__(self):
-        return len(self.__input_list)
+        return len(self.__ann_list)

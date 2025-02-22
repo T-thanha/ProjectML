@@ -1,6 +1,6 @@
 #<---------------------------------> Outsource Libraries <-------------------------->
 import torch
-from torch.utils.data import random_split, DataLoader
+from torch.utils.data import random_split, DataLoader, ConcatDataset
 import torchvision.transforms as transforms
 #<---------------------------------> Internal Import <-------------------------->
 from learning.datasets import LicensePlateDataset
@@ -8,29 +8,34 @@ from learning.networks import FasterRCNN
 from learning.models import train_model
 #<---------------------------------> Define <-------------------------->
 # PATH
-IMAGES_PATH = ["data/images/"]
-LABEL_PATH = ["data/annotations/"]
+IMAGES_PATH = ["data/images/", "data/images2/"]
+LABEL_PATH = ["data/annotations/", "data/annotations2/"]
 MODEL_SAVE_PATH = "models/RCNN/"
 # = Hyperparameters
-BATCH_SIZE = 4
+BATCH_SIZE = 1
 LEARNING_RATE = 0.002
 WEIGHT_DECAY = 0.0001
 
 # - Model State
-MODEL_CHECKPOINT = "MLP-best-train_loss2.7217-epoch=44-lr=0.002-wd=0.0001.pt"
+MODEL_CHECKPOINT = "MLP-best-train_loss148.6988-epoch=11-lr=0.002-wd=0.0001.pt"
 RUN_EPOCHS = 50
 
 if __name__ == "__main__":
+    # - > Transform
+    mtransforms = transforms.Compose([ transforms.ToTensor(),transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     # -> Load Dataset
-    dataset = LicensePlateDataset(IMAGES_PATH[0], LABEL_PATH[0], transforms=transforms.ToTensor())
+    dataset_list = []
+    for img_path, label_path in zip(IMAGES_PATH, LABEL_PATH):
+        dataset_list.append(LicensePlateDataset(img_path, label_path, transforms=mtransforms))
+    dataset = ConcatDataset(dataset_list)
 
-    # -> pytorch split
+    # -> Data split
     split_generator = torch.Generator().manual_seed(999)
 
     train_dataset, val_dataset = random_split(dataset, [0.90, 0.10], generator=split_generator)
 
     # -> Data Loader
-    train_loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, collate_fn=lambda x: tuple(zip(*x)))
+    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, collate_fn=lambda x: tuple(zip(*x)))
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=True, collate_fn=lambda x: tuple(zip(*x)))
     
     # -> Device

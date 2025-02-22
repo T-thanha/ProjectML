@@ -8,7 +8,7 @@ import glob
 import cv2 as cv
 
 LABEL_PATH = "data/annotations/"
-MODEL_PATH = "models/RCNN/MLP-best-train_loss2.6576-epoch=49-lr=0.002-wd=0.0001.pt" 
+MODEL_PATH = "models/RCNN/MLP-best-train_loss91.4306-epoch=22-lr=0.002-wd=0.0001.pt" 
 IMAGES_PATH = "data/test/"
 # โหลดโมเดล
 def load_model(device, model_path, num_classes=2):
@@ -72,15 +72,16 @@ def video_test(device,model, video_path):
     cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
 
+
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
-        image = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+        image = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
         predictions = predict(device,model, image)
         for i in range(len(predictions[0]['boxes'])):
             score = predictions[0]['scores'][i].item()
-            if score > 0.5:
+            if score > 0.8:
                 box = predictions[0]['boxes'][i].tolist()
                 cv.rectangle(frame, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
                 cv.putText(frame, f"{score:.2f}", (int(box[0]), int(box[1]) - 5), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
@@ -94,7 +95,7 @@ if __name__ == "__main__":
     device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
     model = load_model(device,MODEL_PATH)
 
-    test_img = glob.glob(IMAGES_PATH + "/*.jpg") + glob.glob(IMAGES_PATH + "/*.png") + glob.glob(IMAGES_PATH + "/*.jpeg")
+    # test_img = glob.glob(IMAGES_PATH + "/*.jpg") + glob.glob(IMAGES_PATH + "/*.png") + glob.glob(IMAGES_PATH + "/*.jpeg")
 
     # Test on images
     # for image_file in test_img:

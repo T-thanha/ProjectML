@@ -45,7 +45,7 @@ def saveBestCheckpoint(model_save_path, model, optimizer, train_loss_list,
             "optimizer_state_dict": optimizer.state_dict(),
             "train_loss": train_loss_list,
             "epoch": epoch,
-            "best_loss": current_loss
+            "best_loss": current_loss,
         }, os.path.join(model_save_path, model_file))
 
         return current_loss 

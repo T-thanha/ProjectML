@@ -14,7 +14,6 @@ def train_model(device, model, train_loader, val_loader="", num_epochs=5,
     # -> Load model checkpoint
     if model_name:
         model, optimizer, train_losses, start_epoch, best_loss = loadCheckpoint(model, optimizer, model_save_path+model_name)
-        print(f"Model loaded from {model_name}, starting from epoch {start_epoch}")
     
     # -> Training epochs loop
     for epoch in trange(start_epoch, start_epoch+num_epochs, desc="Training Epochs"):
@@ -32,21 +31,9 @@ def train_model(device, model, train_loader, val_loader="", num_epochs=5,
             epoch_loss += loss.item()
         
         train_losses.append(epoch_loss)
-        
-        # model.eval()
-        # predictions_list = []
-        avg_pre_score = 0.0
-        # with torch.no_grad():
-        #     for images, targets in tqdm(val_loader, desc="Validation"):
-        #         images = [img.to(device) for img in images]
-        #         predictions = model(images)
-        #         predictions_list.extend(predictions)
-        #         for pred in predictions:
-        #             if "scores" in pred and pred["scores"].numel() > 0:
-        #                 avg_pre_score += pred["scores"].mean().item()
 
 
-        print(f"Epoch [{epoch+1}/{start_epoch+num_epochs}], Training Loss: {epoch_loss:.4f}, Validation Score: {avg_pre_score:.4f}")
+        print(f"Epoch [{epoch+1}/{start_epoch+num_epochs}], Training Loss: {epoch_loss:.4f}")
 
         best_loss = saveBestCheckpoint(model_save_path, model, optimizer, train_losses, epoch, lr, weight_decay, best_loss)
         
